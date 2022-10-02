@@ -1,4 +1,4 @@
-package ru.DmN.lj.asm;
+package ru.DmN.lj.asm.compiler;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -58,7 +58,7 @@ public class Compiler extends ru.DmN.lj.asm.ljaBaseListener {
                             type = LJConstant.Type.STRING;
                         }
                     } else {
-                        value = Float.parseFloat(ctx.FLOAT_NUMBER().getText());
+                        value = Double.parseDouble(ctx.FLOAT_NUMBER().getText());
                         type = LJConstant.Type.FLOAT;
                     }
                 } else {

@@ -1,8 +1,9 @@
 package ru.DmN.lj.asm.test;
 
 import org.junit.jupiter.api.Test;
-import ru.DmN.lj.asm.Compiler;
-import ru.DmN.lj.asm.Debugger;
+import ru.DmN.lj.asm.compiler.Compiler;
+import ru.DmN.lj.asm.debugger.Debugger;
+import ru.DmN.lj.asm.debugger.LoadedModule;
 import ru.DmN.lj.uo.SerializationUtils;
 
 import java.io.*;
@@ -25,7 +26,7 @@ public class MainTests {
             }
             //
             var debugger = new Debugger();
-            debugger.modules.add(new Debugger.LoadedModule(new StdModule()));
+            debugger.modules.add(new LoadedModule(new StdModule()));
             debugger.debug = (thread, ctx) -> System.out.println("DEBUG!");
             debugger.printDebugTrace = true;
             debugger.debugStream = new PrintStream(new FileOutputStream("run/debug.log"));

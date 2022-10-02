@@ -1,5 +1,6 @@
-package ru.DmN.lj.asm;
+package ru.DmN.lj.asm.debugger;
 
+import ru.DmN.lj.asm.compiler.Compiler;
 import ru.DmN.lj.uo.LJFunction;
 import ru.DmN.lj.uo.LJModule;
 import ru.DmN.lj.uo.LJOpcode;
@@ -48,14 +49,14 @@ public class Debugger {
                     }
                     case LJOpcode.DUP -> stack.push(stack.peek());
                     //
-                    case LJOpcode.ADD -> stack.push(popd(stack) + popd(stack));
-                    case LJOpcode.SUB -> stack.push(popd(stack) - popd(stack));
-                    case LJOpcode.MUL -> stack.push(popd(stack) * popd(stack));
-                    case LJOpcode.DIV -> stack.push(popd(stack) / popd(stack));
-                    case LJOpcode.MOD -> stack.push(popd(stack) % popd(stack));
+                    case LJOpcode.ADD -> stack.push(MathUtils.add(stack.pop(), stack.pop()));
+                    case LJOpcode.SUB -> stack.push(MathUtils.sub(stack.pop(), stack.pop()));
+                    case LJOpcode.MUL -> stack.push(MathUtils.mul(stack.pop(), stack.pop()));
+                    case LJOpcode.DIV -> stack.push(MathUtils.div(stack.pop(), stack.pop()));
+                    case LJOpcode.MOD -> stack.push(MathUtils.mod(stack.pop(), stack.pop()));
                     //
-                    case LJOpcode.CMPEQ -> stack.push(stack.pop() == stack.pop());
-                    case LJOpcode.CMPNEQ -> stack.push(stack.pop() != stack.pop());
+                    case LJOpcode.CMPEQ -> stack.push(Objects.equals(stack.pop(), stack.pop()));
+                    case LJOpcode.CMPNEQ -> stack.push(!Objects.equals(stack.pop(), stack.pop()));
                     case LJOpcode.CMPGT -> stack.push(popd(stack) > popd(stack));
                     case LJOpcode.CMPLS -> stack.push(popd(stack) < popd(stack));
                     //
@@ -225,45 +226,5 @@ public class Debugger {
         if (o instanceof Integer v)
             return v;
         return (double) o;
-    }
-
-    public static class ThreadContext {
-        public final Stack<RunContext> contexts = new Stack<>();
-    }
-
-    public static class RunContext {
-        public int ptr;
-        public Stack<Object> stack = new Stack<>();
-        public Object[] variables;
-        public final LJFunction function;
-
-        public RunContext(LJFunction function) {
-            this.variables = new Object[function.vcount];
-            this.function = function;
-        }
-    }
-
-    public static class LoadedModule {
-        public final LJModule src;
-        public final Map<String, Object> variables;
-
-        public LoadedModule(LJModule src) {
-            this.src = src;
-            this.variables = new HashMap<>(src.variables.size());
-        }
-    }
-
-    public static class NativeFunction extends LJFunction {
-        public final Method method;
-
-        public NativeFunction(LJModule owner, String name, Method method) {
-            super(owner, name, 0, new HashMap<>(), List.of(new LJOpcode(LJOpcode.NATIVE, new int[0])));
-            this.method = method;
-        }
-
-        @FunctionalInterface
-        public interface Method {
-            void call(ThreadContext thread, RunContext ctx);
-        }
     }
 }
