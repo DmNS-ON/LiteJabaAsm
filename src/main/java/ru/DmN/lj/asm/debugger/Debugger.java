@@ -19,9 +19,9 @@ public class Debugger {
         var thread = new ThreadContext();
 
         {
-            var module = new LoadedModule(compiler.modules.stream().filter(e -> e.name.equals(mainModule)).findFirst().get());
+            var module = new LoadedModule(compiler.modules.stream().filter(e -> e.name.equals(mainModule)).findFirst().orElseThrow(() -> new RuntimeException("Модуль `" + mainModule + "` не найден!")));
             this.modules.add(module);
-            thread.contexts.add(new RunContext(module.src.functions.stream().filter(e -> e.name.equals("main")).findFirst().get()));
+            thread.contexts.add(new RunContext(module.src.functions.stream().filter(e -> e.name.equals("main")).findFirst().orElseThrow(() -> new RuntimeException("Функция `main` в модуле " + mainModule + " не найдена!"))));
         }
 
         while (!thread.contexts.empty()) {
@@ -146,7 +146,7 @@ public class Debugger {
     }
 
     public LoadedModule getModule(String name) {
-        return this.modules.stream().filter(e -> e.src.name.equals(name)).findFirst().get();
+        return this.modules.stream().filter(e -> e.src.name.equals(name)).findFirst().orElseThrow(() -> new RuntimeException("Модуль `" + name + "` не найден!"));
     }
 
     public LJFunction getFunction(LJModule caller, String name) {
