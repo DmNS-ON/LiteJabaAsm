@@ -1,5 +1,7 @@
 package ru.DmN.lj.uo;
 
+import java.util.Arrays;
+
 public class LJConstant {
     public final int i;
     public final Type type;
@@ -12,11 +14,21 @@ public class LJConstant {
     }
 
     public enum Type {
-        INT,
-        FLOAT,
-        STRING,
-        REF_LABEL,
-        REF_VAR,
-        REF_FUN
+        INT(0),
+        FLOAT(1),
+        STRING(2),
+        REF_LABEL(3),
+        REF_VAR(4),
+        REF_FUN(5);
+
+        public final int id;
+
+        Type(int id) {
+            this.id = id;
+        }
+
+        public static Type of(int id) {
+            return Arrays.stream(values()).filter(e -> e.id == id).findFirst().get();
+        }
     }
 }

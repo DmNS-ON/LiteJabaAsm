@@ -9,7 +9,7 @@ public class LJModule {
     public final List<LJVariable> variables;
     public final List<LJFunction> functions;
 
-    public LJModule(String name, List<LJConstant> constants, List<LJVariable> variables, List<LJFunction> functions, List<LJExternal> externals) {
+    public LJModule(String name, List<LJExternal> externals, List<LJConstant> constants, List<LJVariable> variables, List<LJFunction> functions) {
         this.name = name;
         this.constants = constants;
         this.variables = variables;
