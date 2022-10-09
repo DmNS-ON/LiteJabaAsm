@@ -33,7 +33,7 @@ extern
 */
 
 constant
-    : '#' NATURAL_NUMBER (HEX_NUMBER|FLOAT_NUMBER|DIGITAL_NUMBER|NATURAL_NUMBER|STRING|((LABEL|VAR|FUN) LITERAL)) endline
+    : '#' NATURAL_NUMBER (NULL|HEX_NUMBER|FLOAT_NUMBER|DIGITAL_NUMBER|NATURAL_NUMBER|STRING|((LABEL|VAR|FUN) LITERAL)) endline
     ;
 
 variable
@@ -76,11 +76,13 @@ op0
     // mul - умножает 2 числа в стеке
     // div - делит 2 числа в стеке
     // mod - берёт остаток до деления 2 чисел в стеке
-    | 'cmpeq'|'cmpneq'|'cmpgt'|'cmpls'
+    | 'cmpeq'|'cmpneq'|'cmpgt'|'cmpls'|'cmpn'|'cmpnn'
     // cmp(eq) - pop == pop
     // cmp(neq) - pop != pop
     // cmp(gt) - pop > pop
     // cmp(ls) - pop < pop
+    // cmp(n) - pop == null
+    // cmp(nn) - pop != null
     | 'ret'|'retv'|'rets'
     // ret - выход из функции
     // retv - выход из функции с возвратом значения
@@ -165,6 +167,10 @@ DIGITAL_NUMBER
 
 NATURAL_NUMBER
     : (Digit '_'?)+
+    ;
+
+NULL
+    : 'null'
     ;
 
 fragment Letter

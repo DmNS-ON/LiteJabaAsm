@@ -16,14 +16,22 @@ public class Debugger {
     public PrintStream debugStream;
 
     public ThreadContext eval(Compiler compiler, String mainModule) {
+        var module = new LoadedModule(compiler.modules.stream().filter(e -> e.name.equals(mainModule)).findFirst().orElseThrow(() -> new RuntimeException("Модуль `" + mainModule + "` не найден!")));
+        this.modules.add(module);
+        return this.eval(module);
+    }
+
+    public ThreadContext eval(String module) {
+        return this.eval(this.modules.stream().filter(e -> e.src.name.equals(module)).findFirst().orElseThrow(() -> new RuntimeException("Модуль `" + module + "` не найден!")));
+    }
+
+    public ThreadContext eval(LoadedModule module) {
         var thread = new ThreadContext();
+        thread.contexts.add(new RunContext(module.src.functions.stream().filter(e -> e.name.equals("main")).findFirst().orElseThrow(() -> new RuntimeException("Функция `main` в модуле " + module.src.name + " не найдена!"))));
+        return eval(thread);
+    }
 
-        {
-            var module = new LoadedModule(compiler.modules.stream().filter(e -> e.name.equals(mainModule)).findFirst().orElseThrow(() -> new RuntimeException("Модуль `" + mainModule + "` не найден!")));
-            this.modules.add(module);
-            thread.contexts.add(new RunContext(module.src.functions.stream().filter(e -> e.name.equals("main")).findFirst().orElseThrow(() -> new RuntimeException("Функция `main` в модуле " + mainModule + " не найдена!"))));
-        }
-
+    public ThreadContext eval(ThreadContext thread) {
         while (!thread.contexts.empty()) {
             var ctx = thread.contexts.pop();
             var constants = ctx.function.owner.constants;
@@ -59,6 +67,8 @@ public class Debugger {
                     case LJOpcode.CMPNEQ -> stack.push(!Objects.equals(stack.pop(), stack.pop()));
                     case LJOpcode.CMPGT -> stack.push(popd(stack) > popd(stack));
                     case LJOpcode.CMPLS -> stack.push(popd(stack) < popd(stack));
+                    case LJOpcode.CMPN -> stack.push(stack.pop() == null);
+                    case LJOpcode.CMPNN -> stack.push(stack.pop() != null);
                     //
                     case LJOpcode.RET -> {
                         break ctx;
@@ -79,7 +89,7 @@ public class Debugger {
                         stack.push(module.variables.get(getVariable(ctx.function.owner, module.src, id).name));
                     }
                     //
-                    case LJOpcode.CONVD -> stack.push(popd(stack));
+                    case LJOpcode.CONVF -> stack.push(popd(stack));
                     case LJOpcode.CONVI -> stack.push((int) popd(stack));
                     //
                     case LJOpcode.AC -> stack.push(new Object[(int) stack.pop()]);

@@ -17,6 +17,8 @@ public class LJOpcode {
     public static final int CMPNEQ = 10;
     public static final int CMPGT = 11;
     public static final int CMPLS = 12;
+    public static final int CMPN = 33;
+    public static final int CMPNN = 34;
     //
     public static final int RET = 13;
     public static final int RETV = 14;
@@ -26,7 +28,7 @@ public class LJOpcode {
     public static final int GETG = 17;
     //
     public static final int CONVI = 18;
-    public static final int CONVD = 19;
+    public static final int CONVF = 19;
     //
     public static final int AC = 20;
     public static final int AL = 21;

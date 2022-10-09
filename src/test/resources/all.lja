@@ -1,5 +1,6 @@
 module TM
 
+extern std fun exit
 extern std fun println
 
 #0 fun println
@@ -24,6 +25,7 @@ extern std fun println
 #19 label array_print
 #20 label array_print_end
 #21 202.213
+#22 fun exit
 
 var text
 
@@ -155,7 +157,8 @@ fun main:1
     array_print_end:; метка `array_print_end` [arr]
     pop             ; [arr ->]
 
-    ret         ; выход из функции []
+    push 8      ; (8 - константа) [-> 0]
+    call 22 1   ; вызывает функцию `конца программы` (22 - функция, 1 - кол-во параметров) [0 ->]
 
 fun foo:0
     push 9      ; (9 - константа) [-> "Foo!"]

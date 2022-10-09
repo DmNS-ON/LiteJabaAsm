@@ -19,7 +19,8 @@ public class LJConstant {
         STRING(2),
         REF_LABEL(3),
         REF_VAR(4),
-        REF_FUN(5);
+        REF_FUN(5),
+        NULL(6);
 
         public final int id;
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import ru.DmN.lj.asm.compiler.Compiler;
 import ru.DmN.lj.asm.debugger.Debugger;
 import ru.DmN.lj.asm.debugger.LoadedModule;
+import ru.DmN.lj.asm.debugger.StdModule;
 import ru.DmN.lj.uo.SerializationUtils;
 
 import java.io.*;
@@ -18,19 +19,23 @@ public class MainTests {
             new File("run").mkdir();
             //
             try (var s = new FileOutputStream("run/all.ljuo")) {
-                SerializationUtils.serialize(s, compiler.modules.get(0));
+                SerializationUtils.writeModule(s, compiler.modules.get(0));
             }
             try (var s = new FileInputStream("run/all.ljuo")) {
-                var module = SerializationUtils.deserialize(s);
+                var module = SerializationUtils.readModule(s);
                 System.out.println(module); // for check - set breakpoint
             }
             //
             var debugger = new Debugger();
-            debugger.modules.add(new LoadedModule(new StdModule()));
+            debugger.modules.add(new LoadedModule(new StdModule(System.out)));
             debugger.debug = (thread, ctx) -> System.out.println("DEBUG!");
             debugger.printDebugTrace = true;
             debugger.debugStream = new PrintStream(new FileOutputStream("run/debug.log"));
-            System.out.println(debugger.eval(compiler, "TM"));
+            try {
+                debugger.eval(compiler, "TM");
+            } catch (StdModule.MainComplete result) {
+                System.out.println("Программа завершена с кодом " + result.exitCode + "!");
+            }
             debugger.debugStream.close();
             //
         }

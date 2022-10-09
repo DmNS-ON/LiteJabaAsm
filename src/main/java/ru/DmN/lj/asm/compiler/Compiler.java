@@ -45,32 +45,37 @@ public class Compiler extends ru.DmN.lj.asm.ljaBaseListener {
     public void enterConstant(ru.DmN.lj.asm.ljaParser.ConstantContext ctx) {
         Object value;
         LJConstant.Type type;
-        if (ctx.NATURAL_NUMBER().size() == 1) {
-            if (ctx.DIGITAL_NUMBER() == null) {
-                if (ctx.HEX_NUMBER() == null) {
-                    if (ctx.FLOAT_NUMBER() == null) {
-                        if (ctx.STRING() == null) {
-                            value = parseLiteral(ctx.LITERAL());
-                            type = ctx.LABEL() == null ? ctx.VAR() == null ? LJConstant.Type.REF_FUN : LJConstant.Type.REF_VAR : LJConstant.Type.REF_LABEL;
+        if (ctx.NULL() == null) {
+            if (ctx.NATURAL_NUMBER().size() == 1) {
+                if (ctx.DIGITAL_NUMBER() == null) {
+                    if (ctx.HEX_NUMBER() == null) {
+                        if (ctx.FLOAT_NUMBER() == null) {
+                            if (ctx.STRING() == null) {
+                                value = parseLiteral(ctx.LITERAL());
+                                type = ctx.LABEL() == null ? ctx.VAR() == null ? LJConstant.Type.REF_FUN : LJConstant.Type.REF_VAR : LJConstant.Type.REF_LABEL;
+                            } else {
+                                var v = ctx.STRING().getText();
+                                value = v.substring(1, v.length() - 1);
+                                type = LJConstant.Type.STRING;
+                            }
                         } else {
-                            var v = ctx.STRING().getText();
-                            value = v.substring(1, v.length() - 1);
-                            type = LJConstant.Type.STRING;
+                            value = Double.parseDouble(ctx.FLOAT_NUMBER().getText());
+                            type = LJConstant.Type.FLOAT;
                         }
                     } else {
-                        value = Double.parseDouble(ctx.FLOAT_NUMBER().getText());
-                        type = LJConstant.Type.FLOAT;
+                        throw new UnsupportedOperationException(); // TODO: parse hex
                     }
                 } else {
-                    throw new UnsupportedOperationException(); // TODO: parse hex
+                    value = Integer.parseInt(ctx.DIGITAL_NUMBER().getText());
+                    type = LJConstant.Type.INT;
                 }
             } else {
-                value = Integer.parseInt(ctx.DIGITAL_NUMBER().getText());
+                value = Integer.parseInt(ctx.NATURAL_NUMBER(1).getText());
                 type = LJConstant.Type.INT;
             }
         } else {
-            value = Integer.parseInt(ctx.NATURAL_NUMBER(1).getText());
-            type = LJConstant.Type.INT;
+            value = null;
+            type = LJConstant.Type.NULL;
         }
         this.module.constants.add(new LJConstant(Integer.parseInt(ctx.NATURAL_NUMBER(0).getText()), type, value));
     }
